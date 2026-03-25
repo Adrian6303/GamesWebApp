@@ -1,0 +1,105 @@
+:root {
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #2f241d;
+  --text-strong: #352117;
+  --text-muted: #654f42;
+  --text-soft: #7a6154;
+  --accent: #a44a25;
+  --accent-border: rgba(164, 74, 37, 0.4);
+  --accent-strong: rgba(164, 74, 37, 0.7);
+  --panel-border: rgba(74, 42, 26, 0.12);
+  --soft-border: rgba(80, 46, 28, 0.12);
+  --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(252, 245, 235, 0.96));
+  --panel-shadow: 0 24px 60px rgba(68, 32, 10, 0.14);
+  --button-bg: rgba(255, 252, 248, 0.92);
+  --active-button-bg: linear-gradient(180deg, #fff4eb 0%, #ffe6d6 100%);
+  --hover-shadow: 0 12px 24px rgba(80, 46, 28, 0.12);
+  --active-shadow: 0 14px 28px rgba(164, 74, 37, 0.14);
+  --upload-bg: #23150f;
+  --upload-text: #fffaf5;
+  --upload-shadow: 0 12px 24px rgba(35, 21, 15, 0.22);
+  --canvas-frame: rgba(53, 32, 21, 0.08);
+  --canvas-bg: #f7efe4;
+  --toggle-bg: rgba(255, 252, 248, 0.84);
+  --toggle-shadow: 0 14px 28px rgba(60, 32, 18, 0.12);
+  --toggle-track: rgba(164, 74, 37, 0.2);
+  --toggle-thumb: #fff8f2;
+  --template-bg: linear-gradient(180deg, rgba(255, 251, 247, 0.98), rgba(250, 240, 231, 0.98));
+  --template-shadow: 0 18px 34px rgba(68, 32, 10, 0.1);
+  --template-image-border: rgba(74, 42, 26, 0.12);
+  --modal-bg: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(254, 241, 228, 0.98));
+  --modal-backdrop: rgba(74, 42, 26, 0.26);
+  --modal-shadow: 0 28px 70px rgba(68, 32, 10, 0.24);
+  background:
+    radial-gradient(circle at top, rgba(255, 214, 171, 0.7), transparent 36%),
+    linear-gradient(180deg, #fff8f0 0%, #f5ede1 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme='dark'] {
+  color: #f2e7dc;
+  --text-strong: #f5e8dd;
+  --text-muted: #c8b8aa;
+  --text-soft: #ac998a;
+  --accent: #ff9e70;
+  --accent-border: rgba(255, 158, 112, 0.42);
+  --accent-strong: rgba(255, 158, 112, 0.72);
+  --panel-border: rgba(255, 230, 210, 0.12);
+  --soft-border: rgba(255, 230, 210, 0.1);
+  --panel-bg: linear-gradient(180deg, rgba(29, 24, 21, 0.96), rgba(18, 16, 16, 0.94));
+  --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  --button-bg: rgba(35, 30, 28, 0.96);
+  --active-button-bg: linear-gradient(180deg, rgba(74, 43, 28, 0.98), rgba(55, 32, 23, 0.98));
+  --hover-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+  --active-shadow: 0 16px 30px rgba(255, 158, 112, 0.12);
+  --upload-bg: #f0dfd3;
+  --upload-text: #241814;
+  --upload-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+  --canvas-frame: rgba(255, 234, 219, 0.08);
+  --canvas-bg: #161b21;
+  --toggle-bg: rgba(23, 21, 21, 0.88);
+  --toggle-shadow: 0 14px 28px rgba(0, 0, 0, 0.26);
+  --toggle-track: rgba(255, 158, 112, 0.28);
+  --toggle-thumb: #f5e8dd;
+  --template-bg: linear-gradient(180deg, rgba(32, 28, 26, 0.98), rgba(21, 19, 18, 0.98));
+  --template-shadow: 0 18px 38px rgba(0, 0, 0, 0.24);
+  --template-image-border: rgba(255, 230, 210, 0.1);
+  --modal-bg: linear-gradient(180deg, rgba(33, 28, 26, 0.98), rgba(19, 17, 17, 0.98));
+  --modal-backdrop: rgba(0, 0, 0, 0.52);
+  --modal-shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
+  background:
+    radial-gradient(circle at top, rgba(109, 55, 31, 0.48), transparent 34%),
+    linear-gradient(180deg, #121010 0%, #1b1716 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: inherit;
+  background: inherit;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+button,
+input,
+canvas {
+  font: inherit;
+}
