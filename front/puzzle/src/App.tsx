@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { JigsawGame } from './games/JigsawGame'
 import { PuzzleGame } from './games/PuzzleGame'
 
-type Screen = 'menu' | 'puzzle'
+type Screen = 'menu' | 'simple-puzzle' | 'jigsaw-puzzle'
 
 const GAME_OPTIONS = [
   {
     id: 'simple-puzzle',
     title: 'Simple Puzzle',
     detail: 'Upload a photo and rebuild it tile by tile.',
+    tabTitle: 'simple puzzle',
   },
-]
+  {
+    id: 'jigsaw-puzzle',
+    title: 'Jigsaw Puzzle',
+    detail: 'Scatter 40 to 60 pieces around the border and build in the center.',
+    tabTitle: 'jigsaw puzzle',
+  },
+] as const
 
 function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>('menu')
@@ -21,7 +29,10 @@ function App() {
   }, [isDarkMode])
 
   useEffect(() => {
-    document.title = activeScreen === 'menu' ? 'Games' : 'simple puzzle'
+    document.title =
+      activeScreen === 'menu'
+        ? 'Games'
+        : GAME_OPTIONS.find((game) => game.id === activeScreen)?.tabTitle ?? 'Games'
   }, [activeScreen])
 
   return (
@@ -56,7 +67,7 @@ function App() {
                 key={game.id}
                 type="button"
                 className="game-card"
-                onClick={() => setActiveScreen('puzzle')}
+                onClick={() => setActiveScreen(game.id)}
               >
                 <span className="game-card__name">{game.title}</span>
                 <span className="game-card__detail">{game.detail}</span>
@@ -64,11 +75,13 @@ function App() {
             ))}
           </section>
         </>
-      ) : (
+      ) : activeScreen === 'simple-puzzle' ? (
         <PuzzleGame
           isDarkMode={isDarkMode}
           onBack={() => setActiveScreen('menu')}
         />
+      ) : (
+        <JigsawGame onBack={() => setActiveScreen('menu')} />
       )}
     </main>
   )
