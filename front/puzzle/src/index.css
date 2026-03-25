@@ -14,6 +14,8 @@
   --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(252, 245, 235, 0.96));
   --panel-shadow: 0 24px 60px rgba(68, 32, 10, 0.14);
   --button-bg: rgba(255, 252, 248, 0.92);
+  --card-bg: linear-gradient(180deg, rgba(255, 250, 245, 0.98), rgba(251, 239, 226, 0.98));
+  --card-shadow: 0 18px 38px rgba(68, 32, 10, 0.12);
   --active-button-bg: linear-gradient(180deg, #fff4eb 0%, #ffe6d6 100%);
   --hover-shadow: 0 12px 24px rgba(80, 46, 28, 0.12);
   --active-shadow: 0 14px 28px rgba(164, 74, 37, 0.14);
@@ -54,6 +56,8 @@
   --panel-bg: linear-gradient(180deg, rgba(29, 24, 21, 0.96), rgba(18, 16, 16, 0.94));
   --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
   --button-bg: rgba(35, 30, 28, 0.96);
+  --card-bg: linear-gradient(180deg, rgba(37, 31, 29, 0.98), rgba(24, 21, 20, 0.98));
+  --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.26);
   --active-button-bg: linear-gradient(180deg, rgba(74, 43, 28, 0.98), rgba(55, 32, 23, 0.98));
   --hover-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
   --active-shadow: 0 16px 30px rgba(255, 158, 112, 0.12);

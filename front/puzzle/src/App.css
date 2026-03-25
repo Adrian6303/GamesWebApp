@@ -31,6 +31,50 @@
   font-size: 1.05rem;
 }
 
+.menu-grid {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 220px));
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.game-card {
+  aspect-ratio: 1 / 1;
+  padding: 1.4rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 30px;
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  color: var(--text-strong);
+  display: grid;
+  align-content: center;
+  gap: 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-border);
+  box-shadow: var(--hover-shadow);
+}
+
+.game-card__name {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.game-card__detail {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
 .board-panel {
   width: min(100%, 980px);
   margin: 0 auto;
@@ -98,6 +142,32 @@
 .completion-button:hover {
   transform: translateY(-1px);
   box-shadow: var(--upload-shadow);
+}
+
+.back-button {
+  padding: 0.72rem 1rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: var(--button-bg);
+  color: var(--text-strong);
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.back-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-border);
+  box-shadow: var(--hover-shadow);
+}
+
+.back-button--corner {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
 }
 
 .theme-toggle {
@@ -343,11 +413,6 @@
   cursor: grabbing;
 }
 
-.board-meta {
-  display: grid;
-  gap: 0.35rem;
-}
-
 @media (max-width: 640px) {
   .app-shell {
     padding-inline: 1rem;
@@ -366,9 +431,18 @@
     flex-direction: column;
   }
 
+  .menu-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .theme-toggle {
     top: 0.75rem;
     right: 0.75rem;
+  }
+
+  .back-button--corner {
+    top: 0.75rem;
+    left: 0.75rem;
   }
 
   .completion-modal {
