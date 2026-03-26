@@ -3,8 +3,9 @@ import './App.css'
 import { Game2048 } from './games/Game2048'
 import { JigsawGame } from './games/JigsawGame'
 import { PuzzleGame } from './games/PuzzleGame'
+import { SlidingPuzzleGame } from './games/SlidingPuzzleGame'
 
-type Screen = 'menu' | 'simple-puzzle' | 'jigsaw-puzzle' | 'game-2048'
+type Screen = 'menu' | 'simple-puzzle' | 'jigsaw-puzzle' | 'game-2048' | 'sliding-15-puzzle'
 
 const GAME_OPTIONS = [
   {
@@ -24,6 +25,12 @@ const GAME_OPTIONS = [
     title: '2048',
     detail: 'Merge matching tiles with arrows or WASD until you reach 2048.',
     tabTitle: '2048',
+  },
+  {
+    id: 'sliding-15-puzzle',
+    title: 'Sliding 15-Puzzle',
+    detail: 'Slide number tiles or a photo into place on a classic 4x4 board.',
+    tabTitle: 'sliding 15-puzzle',
   },
 ] as const
 
@@ -124,8 +131,10 @@ function App() {
         />
       ) : activeScreen === 'jigsaw-puzzle' ? (
         <JigsawGame onBack={() => setActiveScreen('menu')} />
-      ) : (
+      ) : activeScreen === 'game-2048' ? (
         <Game2048 onBack={() => setActiveScreen('menu')} />
+      ) : (
+        <SlidingPuzzleGame onBack={() => setActiveScreen('menu')} />
       )}
     </main>
   )

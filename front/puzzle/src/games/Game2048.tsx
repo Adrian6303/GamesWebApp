@@ -246,7 +246,7 @@ export function Game2048({ onBack }: Game2048Props) {
         animationTimeoutRef.current = window.setTimeout(() => {
           setAnimatedCells([])
           animationTimeoutRef.current = null
-        }, 220)
+        }, 320)
         setStatus(`Moved ${direction}. Keep combining tiles to reach 2048.`)
 
         if (!wonAlready && nextHighestTile >= 2048) {
