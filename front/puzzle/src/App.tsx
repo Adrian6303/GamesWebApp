@@ -36,9 +36,11 @@ const GAME_OPTIONS = [
 
 function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const adhdVideoRef = useRef<HTMLVideoElement | null>(null)
   const [activeScreen, setActiveScreen] = useState<Screen>('menu')
   const [isDarkMode, setIsDarkMode] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   const [isMusicPlaying, setIsMusicPlaying] = useState(false)
+  const [isAdhdModeEnabled, setIsAdhdModeEnabled] = useState(false)
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light'
@@ -71,6 +73,27 @@ function App() {
     }
   }
 
+  const toggleAdhdMode = async () => {
+    const video = adhdVideoRef.current
+
+    if (!video) {
+      return
+    }
+
+    if (isAdhdModeEnabled) {
+      video.pause()
+      setIsAdhdModeEnabled(false)
+      return
+    }
+
+    try {
+      await video.play()
+      setIsAdhdModeEnabled(true)
+    } catch {
+      setIsAdhdModeEnabled(false)
+    }
+  }
+
   return (
     <main className="app-shell">
       <audio ref={audioRef} src="/media/coace-doamne-prunele.mp3" loop />
@@ -97,6 +120,25 @@ function App() {
         >
           {isMusicPlaying ? 'Pause music' : 'Play music'}
         </button>
+
+        <button
+          type="button"
+          className="music-toggle"
+          onClick={toggleAdhdMode}
+          aria-pressed={isAdhdModeEnabled}
+        >
+          {isAdhdModeEnabled ? 'Pause ADHD mode' : 'Play ADHD mode'}
+        </button>
+
+        <div className={`adhd-video-shell${isAdhdModeEnabled ? ' is-visible' : ''}`}>
+          <video
+            ref={adhdVideoRef}
+            className="adhd-video"
+            src="/media/subway-surfers-gameplay.mp4"
+            loop
+            playsInline
+          />
+        </div>
       </div>
 
       {activeScreen === 'menu' ? (
