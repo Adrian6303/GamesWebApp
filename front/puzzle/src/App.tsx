@@ -23,7 +23,7 @@ const GAME_OPTIONS = [
   {
     id: 'game-2048',
     title: '2048',
-    detail: 'Merge matching tiles with arrows or WASD until you reach 2048.',
+    detail: 'Merge matching tiles until you reach 2048.',
     tabTitle: '2048',
   },
   {
@@ -104,10 +104,6 @@ function App() {
           <section className="hero">
             <p className="eyebrow">Game Menu</p>
             <h1>Choose the game you want to play.</h1>
-            <p className="hero-copy">
-              Start from a simple square card menu now, and we can grow this into a full
-              mini-game collection later.
-            </p>
           </section>
 
           <section className="menu-grid" aria-label="Available games">

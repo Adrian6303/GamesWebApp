@@ -571,7 +571,6 @@ export function PuzzleGame({ isDarkMode, onBack }: PuzzleGameProps) {
         </div>
 
         <p className="status-text">{status}</p>
-        <p className="hint-text">Drag a tile over any other tile to swap their places.</p>
 
         <canvas
           ref={canvasRef}
