@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import '../App.css'
 
 type Game2048Props = {
@@ -12,6 +12,21 @@ type ModalState = {
   message: string
   actionLabel: string
   action: 'continue' | 'restart'
+}
+
+type CellPosition = {
+  row: number
+  col: number
+}
+
+type SlideAnimation = CellPosition & {
+  deltaRow: number
+  deltaCol: number
+}
+
+type LineEntry = {
+  value: number
+  sources: number[]
 }
 
 const GRID_SIZE = 4
@@ -32,7 +47,7 @@ function boardsEqual(first: number[][], second: number[][]) {
 }
 
 function getEmptyCells(board: number[][]) {
-  const cells: Array<{ row: number; col: number }> = []
+  const cells: Array<CellPosition> = []
 
   board.forEach((row, rowIndex) => {
     row.forEach((value, columnIndex) => {
@@ -50,49 +65,55 @@ function addRandomTile(board: number[][]) {
   const emptyCells = getEmptyCells(nextBoard)
 
   if (!emptyCells.length) {
-    return nextBoard
+    return { board: nextBoard, spawnCell: null as CellPosition | null }
   }
 
   const chosenCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
   nextBoard[chosenCell.row][chosenCell.col] = Math.random() < 0.9 ? 2 : 4
 
-  return nextBoard
+  return { board: nextBoard, spawnCell: chosenCell }
 }
 
 function createStartingBoard() {
   let board = createEmptyBoard()
 
   for (let count = 0; count < START_TILES; count += 1) {
-    board = addRandomTile(board)
+    board = addRandomTile(board).board
   }
 
   return board
 }
 
 function collapseLine(values: number[]) {
-  const compact = values.filter((value) => value !== 0)
-  const merged: number[] = []
+  const compact = values
+    .map((value, index) => ({ value, index }))
+    .filter((entry) => entry.value !== 0)
+  const merged: LineEntry[] = []
   let scoreGain = 0
 
   for (let index = 0; index < compact.length; index += 1) {
     const current = compact[index]
     const next = compact[index + 1]
 
-    if (current === next) {
-      const mergedValue = current * 2
-      merged.push(mergedValue)
+    if (next && current.value === next.value) {
+      const mergedValue = current.value * 2
+      merged.push({ value: mergedValue, sources: [current.index, next.index] })
       scoreGain += mergedValue
       index += 1
     } else {
-      merged.push(current)
+      merged.push({ value: current.value, sources: [current.index] })
     }
   }
 
   while (merged.length < GRID_SIZE) {
-    merged.push(0)
+    merged.push({ value: 0, sources: [] })
   }
 
-  return { line: merged, scoreGain }
+  return {
+    entries: merged,
+    line: merged.map((entry) => entry.value),
+    scoreGain,
+  }
 }
 
 function getColumn(board: number[][], columnIndex: number) {
@@ -108,6 +129,8 @@ function setColumn(board: number[][], columnIndex: number, values: number[]) {
 function applyMove(board: number[][], direction: Direction) {
   const nextBoard = createEmptyBoard()
   let scoreGain = 0
+  const slideAnimations: SlideAnimation[] = []
+  const popCells: string[] = []
 
   if (direction === 'left' || direction === 'right') {
     board.forEach((row, rowIndex) => {
@@ -117,6 +140,32 @@ function applyMove(board: number[][], direction: Direction) {
 
       nextBoard[rowIndex] = finalLine
       scoreGain += collapsed.scoreGain
+
+      collapsed.entries.forEach((entry, logicalColumnIndex) => {
+        if (entry.value === 0) {
+          return
+        }
+
+        const columnIndex =
+          direction === 'right' ? GRID_SIZE - 1 - logicalColumnIndex : logicalColumnIndex
+
+        if (entry.sources.length > 1) {
+          popCells.push(`${rowIndex}-${columnIndex}`)
+          return
+        }
+
+        const sourceColumnIndex =
+          direction === 'right' ? GRID_SIZE - 1 - entry.sources[0] : entry.sources[0]
+
+        if (sourceColumnIndex !== columnIndex) {
+          slideAnimations.push({
+            row: rowIndex,
+            col: columnIndex,
+            deltaRow: 0,
+            deltaCol: sourceColumnIndex - columnIndex,
+          })
+        }
+      })
     })
   } else {
     for (let columnIndex = 0; columnIndex < GRID_SIZE; columnIndex += 1) {
@@ -127,10 +176,39 @@ function applyMove(board: number[][], direction: Direction) {
 
       setColumn(nextBoard, columnIndex, finalColumn)
       scoreGain += collapsed.scoreGain
+
+      collapsed.entries.forEach((entry, logicalRowIndex) => {
+        if (entry.value === 0) {
+          return
+        }
+
+        const rowIndex = direction === 'down' ? GRID_SIZE - 1 - logicalRowIndex : logicalRowIndex
+
+        if (entry.sources.length > 1) {
+          popCells.push(`${rowIndex}-${columnIndex}`)
+          return
+        }
+
+        const sourceRowIndex = direction === 'down' ? GRID_SIZE - 1 - entry.sources[0] : entry.sources[0]
+
+        if (sourceRowIndex !== rowIndex) {
+          slideAnimations.push({
+            row: rowIndex,
+            col: columnIndex,
+            deltaRow: sourceRowIndex - rowIndex,
+            deltaCol: 0,
+          })
+        }
+      })
     }
   }
 
-  return { board: nextBoard, scoreGain }
+  return {
+    board: nextBoard,
+    scoreGain,
+    slideAnimations,
+    popCells,
+  }
 }
 
 function canMove(board: number[][]) {
@@ -164,7 +242,8 @@ export function Game2048({ onBack }: Game2048Props) {
   const [board, setBoard] = useState<number[][]>(() => createStartingBoard())
   const [score, setScore] = useState(0)
   const [bestScore, setBestScore] = useState(0)
-  const [animatedCells, setAnimatedCells] = useState<string[]>([])
+  const [slideAnimations, setSlideAnimations] = useState<Record<string, SlideAnimation>>({})
+  const [popCells, setPopCells] = useState<string[]>([])
   const [status, setStatus] = useState('Use your arrow keys or WASD to combine matching tiles.')
   const [modal, setModal] = useState<ModalState | null>(null)
   const [wonAlready, setWonAlready] = useState(false)
@@ -182,7 +261,8 @@ export function Game2048({ onBack }: Game2048Props) {
 
     setBoard(createStartingBoard())
     setScore(0)
-    setAnimatedCells([])
+    setSlideAnimations({})
+    setPopCells([])
     setStatus('Fresh board ready. Use arrows or WASD to reach 2048.')
     setModal(null)
     setWonAlready(false)
@@ -221,32 +301,37 @@ export function Game2048({ onBack }: Game2048Props) {
           return currentBoard
         }
 
-        const boardWithSpawn = addRandomTile(moveResult.board)
+        const spawnResult = addRandomTile(moveResult.board)
+        const boardWithSpawn = spawnResult.board
         const nextHighestTile = Math.max(...boardWithSpawn.flat())
         const movesRemain = canMove(boardWithSpawn)
-        const changedCells: string[] = []
+        const nextSlideAnimations = Object.fromEntries(
+          moveResult.slideAnimations.map((animation) => [
+            `${animation.row}-${animation.col}`,
+            animation,
+          ]),
+        )
+        const nextPopCells = [...moveResult.popCells]
 
-        boardWithSpawn.forEach((row, rowIndex) => {
-          row.forEach((value, columnIndex) => {
-            if (value !== currentBoard[rowIndex][columnIndex]) {
-              changedCells.push(`${rowIndex}-${columnIndex}`)
-            }
-          })
-        })
+        if (spawnResult.spawnCell) {
+          nextPopCells.push(`${spawnResult.spawnCell.row}-${spawnResult.spawnCell.col}`)
+        }
 
         setScore((currentScore) => {
           const nextScore = currentScore + moveResult.scoreGain
           setBestScore((currentBest) => Math.max(currentBest, nextScore))
           return nextScore
         })
-        setAnimatedCells(changedCells)
+        setSlideAnimations(nextSlideAnimations)
+        setPopCells(nextPopCells)
         if (animationTimeoutRef.current) {
           window.clearTimeout(animationTimeoutRef.current)
         }
         animationTimeoutRef.current = window.setTimeout(() => {
-          setAnimatedCells([])
+          setSlideAnimations({})
+          setPopCells([])
           animationTimeoutRef.current = null
-        }, 320)
+        }, 340)
         setStatus(`Moved ${direction}. Keep combining tiles to reach 2048.`)
 
         if (!wonAlready && nextHighestTile >= 2048) {
@@ -353,15 +438,29 @@ export function Game2048({ onBack }: Game2048Props) {
 
         <div className="game2048-board" aria-label="2048 board">
           {board.map((row, rowIndex) =>
-            row.map((value, columnIndex) => (
-              <div
-                key={`${rowIndex}-${columnIndex}`}
-                className={`${getTileClass(value)}${value !== 0 && animatedCells.includes(`${rowIndex}-${columnIndex}`) ? ' is-animated' : ''}`}
-                aria-label={value === 0 ? 'empty tile' : `tile ${value}`}
-              >
-                {value === 0 ? '' : value}
-              </div>
-            )),
+            row.map((value, columnIndex) => {
+              const cellKey = `${rowIndex}-${columnIndex}`
+              const slideAnimation = slideAnimations[cellKey]
+              const isPopping = value !== 0 && popCells.includes(cellKey)
+
+              return (
+                <div
+                  key={cellKey}
+                  className={`${getTileClass(value)}${slideAnimation ? ' is-sliding' : ''}${isPopping ? ' is-animated' : ''}`}
+                  aria-label={value === 0 ? 'empty tile' : `tile ${value}`}
+                  style={
+                    slideAnimation
+                      ? ({
+                          '--move-x': slideAnimation.deltaCol,
+                          '--move-y': slideAnimation.deltaRow,
+                        } as CSSProperties)
+                      : undefined
+                  }
+                >
+                  {value === 0 ? '' : value}
+                </div>
+              )
+            }),
           )}
         </div>
       </section>

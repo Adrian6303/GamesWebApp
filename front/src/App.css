@@ -870,6 +870,19 @@
   }
 }
 
+@keyframes game2048-slide {
+  from {
+    transform: translate(
+      calc(var(--move-x, 0) * (100% + 0.75rem)),
+      calc(var(--move-y, 0) * (100% + 0.75rem))
+    );
+  }
+
+  to {
+    transform: translate(0, 0);
+  }
+}
+
 @keyframes tile-pop {
   0% {
     transform: scale(0.88);
@@ -952,3 +965,4 @@
     font-size: 1.7rem;
   }
 }
+
